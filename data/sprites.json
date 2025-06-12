@@ -1,0 +1,12 @@
+{ "sprites": {
+      "player": {
+        "sprite_path": ["sprites","characters","player"],
+        "states": {
+          "idle": {"flip": true},
+          "run": {"flip": true},
+          "jump": {"flip": true},
+          "fall": {"flip": true}
+        }
+      }
+    }
+}
