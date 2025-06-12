@@ -1,0 +1,26 @@
+{ "sprites": {
+      "player": {
+        "sprite_path": ["sprites", "characters", "player"],
+        "elements": {
+          "idle": {"flip": true},
+          "run": {"flip": true},
+          "jump": {"flip": true},
+          "fall": {"flip": true}
+        }
+      },
+      "menu": {
+      "sprite_path": ["sprites", "UI", "menu"],
+      "elements": {
+        "background": {"static": true},
+        "new_game": {"static": true},
+        "load_game": {"static": true},
+        "settings": {"static": true},
+        "exit": {"static": true},
+        "toggle_sound": {"static": true},
+        "toggle_fullscreen": {"static": true},
+        "back": {"static": true},
+        "to_menu": {"static": true}
+      }
+    }
+  }
+}
