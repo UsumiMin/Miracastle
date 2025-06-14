@@ -21,6 +21,12 @@
         "back": {"static": true},
         "to_menu": {"static": true}
       }
+    },
+    "backgrounds": {
+    "sprite_path": ["sprites", "backgrounds"],
+    "elements": {
+      "level_background": {"static": true}
     }
   }
+}
 }

@@ -10,8 +10,8 @@ class Player(pygame.sprite.Sprite):
         self.animator = AnimationManager("player", scale=2)
         self.image = self.animator.update()
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.rect.width = self.rect.width * 0.6
-        self.rect_offset_x = 14
+        self.rect.width = self.rect.width * CHAR_HIT
+        self.rect_offset_x = 16
         self.rect.x += self.rect_offset_x
         self.facing_right = True
         self.velocity_x = 0
@@ -74,9 +74,9 @@ class Player(pygame.sprite.Sprite):
     def respawn(self, x=INIT_X, y=INIT_Y):
         self.rect.topleft = (x, y)
         original_width = self.image.get_width()
-        new_width = int(original_width * 0.6)
+        new_width = int(original_width * CHAR_HIT)
         self.rect.width = new_width
-        self.rect_offset_x = 14
+        self.rect_offset_x = 16
         self.rect.x += self.rect_offset_x
         self.health = 100
         self.is_alive = True

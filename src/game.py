@@ -80,9 +80,13 @@ class Game:
             # Отрисовываем фон
             self.screen.blit(self.game_background, (0, 0))
             self.state.draw(self.screen, self.camera)
+            
+            if self.camera:
+                    adjusted_rect = self.camera.apply(self.state.get_door()['rect'])
+                    self.screen.blit(self.state.get_door()['surface'], adjusted_rect)
             self.player.draw(self.screen, self.camera)
             for platform in self.state.platforms:
-                pygame.draw.rect(self.screen, (255, 0, 0), self.camera.apply(platform['rect']), 2)
+                pygame.draw.rect(self.screen, PLATFORM_COLOR2, self.camera.apply(platform['rect']), 2)
         pygame.display.update()
 
     def run(self):

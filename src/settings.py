@@ -3,6 +3,7 @@ import os
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 FPS = 60
+CHAR_HIT = 0.45
 
 # Получаем абсолютный путь к папке src/
 BASE_DIR = os.path.abspath(os.curdir)  # Путь к src/
@@ -26,4 +27,5 @@ PLAYER_SPEED = 5
 # Платформы
 PLATFORM_WIDTH = 32
 PLATFORM_HEIGHT = 32
-PLATFORM_COLOR = "#FF6262"
+PLATFORM_COLOR = "#531067"
+PLATFORM_COLOR2 = "#211441"
