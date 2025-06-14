@@ -84,4 +84,4 @@ class Player(pygame.sprite.Sprite):
         self.velocity_y = 0
         self.on_ground = False
         self.facing_right = True
-        self.animator.set_state("idle")
+        self.set_player_state("idle")

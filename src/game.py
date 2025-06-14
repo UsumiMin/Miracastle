@@ -7,7 +7,7 @@ from UI.menu import Menu
 
 class Game:
     def __init__(self):
-        pygame.init()
+        
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Miracastle")
         self.running = True
@@ -84,4 +84,4 @@ class Game:
             self.handle_events()
             self.update()
             self.draw()
-        pygame.quit()  # Завершаем pygame при выходе
+        
