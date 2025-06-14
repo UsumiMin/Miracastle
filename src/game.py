@@ -4,6 +4,7 @@ from levels.level_manager import LevelConstruct as Level
 from entities.player import Player
 from UI.camera import Camera
 from UI.menu import Menu
+from utils.sprite_loader import SpriteLoader
 
 class Game:
     def __init__(self):
@@ -14,6 +15,11 @@ class Game:
         self.clock = pygame.time.Clock()
         self.game_state = "menu" 
         self.menu = Menu(self.screen)
+        # Загружаем фон для игры
+        self.game_data = SpriteLoader.load_character_data("backgrounds")
+        self.game_background = self.game_data["sprites"]["level_background"][0]
+        self.game_background = pygame.transform.scale(self.game_background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        
 
     def handle_events(self):
         events = pygame.event.get()
@@ -71,7 +77,8 @@ class Game:
         """Отрисовывает игру"""
         self.menu.draw()
         if self.game_state == "playing":
-            self.screen.fill(BLUE)
+            # Отрисовываем фон
+            self.screen.blit(self.game_background, (0, 0))
             self.state.draw(self.screen, self.camera)
             self.player.draw(self.screen, self.camera)
             for platform in self.state.platforms:
