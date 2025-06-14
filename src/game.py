@@ -7,7 +7,7 @@ from UI.menu import Menu
 
 class Game:
     def __init__(self):
-        pygame.init()
+        
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Miracastle")
         self.running = True
@@ -25,7 +25,7 @@ class Game:
                 self.state.load("level_1")
                 level_width, level_height = self.state.get_level_size()
                 self.camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT, level_width, level_height)
-                self.player = Player(INIT_X, INIT_Y)
+                self.player = Player(*self.state.get_start_pos())
             elif result is False:
                 self.running = False
             elif result == "to_menu":
@@ -63,7 +63,7 @@ class Game:
         """Обновляет состояние игры"""
         if self.game_state == "playing":
             if not self.player.is_alive:
-                self.player.respawn()  # Изменено на respawn
+                self.player.respawn(*self.state.get_start_pos())  # Изменено на respawn
             self.camera.update(self.player)
             self.player.update(self.state.platforms, self.camera)
 
@@ -84,4 +84,4 @@ class Game:
             self.handle_events()
             self.update()
             self.draw()
-        pygame.quit()  # Завершаем pygame при выходе
+        

@@ -8,6 +8,7 @@ class LevelConstruct:
         self.level_data = None
         self.x_coord = 0
         self.y_coord = 0
+        self.start_pos = (INIT_X, INIT_Y)  # Начальная позиция по умолчанию
     
     def load(self, level_name = 'level_1'):
         self.platforms = []
@@ -39,6 +40,8 @@ class LevelConstruct:
                         'is_deadly': True
                     }
                     self.platforms.append(platform)
+                elif col == "p":
+                    self.start_pos = (self.x_coord, self.y_coord)
                 self.x_coord += PLATFORM_WIDTH
             self.y_coord += PLATFORM_HEIGHT
             self.x_coord = 0
@@ -58,3 +61,6 @@ class LevelConstruct:
 
     def get_level_size(self):
         return self.level_width, self.level_height
+
+    def get_start_pos(self):
+        return self.start_pos

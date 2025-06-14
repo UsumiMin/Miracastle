@@ -55,7 +55,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = handle_collisions(self, safe_platforms, camera, self.velocity_x, self.velocity_y, old_x, old_y)
         for platform in platforms:
             if 'is_deadly' in platform and platform['is_deadly'] and self.rect.colliderect(platform['rect']):
-                self.respawn()
+                self.is_alive = False  # Устанавливаем флаг, чтобы Game обработал респавн
         if self.velocity_y < 0:
             self.set_player_state("jump")
         elif self.velocity_y > 0:
@@ -84,4 +84,4 @@ class Player(pygame.sprite.Sprite):
         self.velocity_y = 0
         self.on_ground = False
         self.facing_right = True
-        self.animator.set_state("idle")
+        self.set_player_state("idle")
