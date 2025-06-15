@@ -4,16 +4,22 @@ from levels.level_manager import LevelConstruct as Level
 from entities.player import Player
 from UI.camera import Camera
 from UI.menu import Menu
+from utils.sprite_loader import SpriteLoader
 
 class Game:
     def __init__(self):
-        pygame.init()
+        
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Miracastle")
         self.running = True
         self.clock = pygame.time.Clock()
         self.game_state = "menu" 
         self.menu = Menu(self.screen)
+        # Загружаем фон для игры
+        self.game_data = SpriteLoader.load_character_data("backgrounds")
+        self.game_background = self.game_data["sprites"]["level_background"][0]
+        self.game_background = pygame.transform.scale(self.game_background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.current_level = "1" 
 
     def handle_events(self):
         events = pygame.event.get()
@@ -22,10 +28,10 @@ class Game:
             if result == "new_game":
                 self.game_state = "playing"
                 self.state = Level()
-                self.state.load("level_1")
+                self.state.load(f"level_{self.current_level}")
                 level_width, level_height = self.state.get_level_size()
                 self.camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT, level_width, level_height)
-                self.player = Player(INIT_X, INIT_Y)
+                self.player = Player(*self.state.get_start_pos())
             elif result is False:
                 self.running = False
             elif result == "to_menu":
@@ -44,7 +50,18 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.game_state = "paused"
                         self.menu.state = "paused"
-            self.player.handle_events(events)
+            door = self.state.get_door()
+            action = self.player.handle_events(events, door['rect'] if door else None)
+            if action == "change_level":
+                current_num = int(self.current_level)
+                next_num = current_num + 1
+                max_level = 2  # Максимальный номер уровня, можно настроить
+                self.current_level = str(next_num) if next_num <= max_level else "1"  # Циклический переход
+                self.state.load(f"level_{self.current_level}")
+                level_width, level_height = self.state.get_level_size()
+                self.camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT, level_width, level_height)
+                start_pos = self.state.get_start_pos()
+                self.player = Player(start_pos[0], start_pos[1])
         elif self.game_state == "paused":
             result = self.menu.handle_events(events)
             if result == "resume":
@@ -63,19 +80,24 @@ class Game:
         """Обновляет состояние игры"""
         if self.game_state == "playing":
             if not self.player.is_alive:
-                self.player.respawn()  # Изменено на respawn
+                self.player.respawn(*self.state.get_start_pos())  # Изменено на respawn
             self.camera.update(self.player)
-            self.player.update(self.state.platforms, self.camera)
+            self.player.update(self.state.platforms, self.camera, self.state.get_door()['rect'] if self.state.get_door() else None)
 
     def draw(self):
         """Отрисовывает игру"""
         self.menu.draw()
         if self.game_state == "playing":
-            self.screen.fill(BLUE)
+            # Отрисовываем фон
+            self.screen.blit(self.game_background, (0, 0))
             self.state.draw(self.screen, self.camera)
+            
+            if self.camera:
+                    adjusted_rect = self.camera.apply(self.state.get_door()['rect'])
+                    self.screen.blit(self.state.get_door()['surface'], adjusted_rect)
             self.player.draw(self.screen, self.camera)
             for platform in self.state.platforms:
-                pygame.draw.rect(self.screen, (255, 0, 0), self.camera.apply(platform['rect']), 2)
+                pygame.draw.rect(self.screen, PLATFORM_COLOR2, self.camera.apply(platform['rect']), 2)
         pygame.display.update()
 
     def run(self):
@@ -84,4 +106,4 @@ class Game:
             self.handle_events()
             self.update()
             self.draw()
-        pygame.quit()  # Завершаем pygame при выходе
+        

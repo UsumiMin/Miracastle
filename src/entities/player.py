@@ -10,8 +10,8 @@ class Player(pygame.sprite.Sprite):
         self.animator = AnimationManager("player", scale=2)
         self.image = self.animator.update()
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.rect.width = self.rect.width * 0.6
-        self.rect_offset_x = 14
+        self.rect.width = self.rect.width * CHAR_HIT
+        self.rect_offset_x = 16
         self.rect.x += self.rect_offset_x
         self.facing_right = True
         self.velocity_x = 0
@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = False
         self.health = 100
         self.is_alive = True
+        self.near_door = False
 
     def set_player_state(self, base_state):
         state = base_state
@@ -30,7 +31,7 @@ class Player(pygame.sprite.Sprite):
         return state
         
 
-    def handle_events(self, events):
+    def handle_events(self, events, door_rect):
         keys = pygame.key.get_pressed()
         self.velocity_x = 0
         if keys[pygame.K_LEFT]:
@@ -43,8 +44,11 @@ class Player(pygame.sprite.Sprite):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.on_ground:
                 self.velocity_y = -self.jump_power
                 self.on_ground = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_e and self.near_door:
+                return "change_level"  # Сигнал для смены уровня
+        return None
 
-    def update(self, platforms, camera):
+    def update(self, platforms, camera, door_rect):
         if not self.is_alive:
             return
         self.image = self.animator.update()
@@ -55,7 +59,11 @@ class Player(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = handle_collisions(self, safe_platforms, camera, self.velocity_x, self.velocity_y, old_x, old_y)
         for platform in platforms:
             if 'is_deadly' in platform and platform['is_deadly'] and self.rect.colliderect(platform['rect']):
-                self.respawn()
+                self.is_alive = False  # Устанавливаем флаг, чтобы Game обработал респавн
+        if door_rect and self.rect.colliderect(door_rect):
+            self.near_door = True
+        else:
+            self.near_door = False
         if self.velocity_y < 0:
             self.set_player_state("jump")
         elif self.velocity_y > 0:
@@ -74,9 +82,9 @@ class Player(pygame.sprite.Sprite):
     def respawn(self, x=INIT_X, y=INIT_Y):
         self.rect.topleft = (x, y)
         original_width = self.image.get_width()
-        new_width = int(original_width * 0.6)
+        new_width = int(original_width * CHAR_HIT)
         self.rect.width = new_width
-        self.rect_offset_x = 14
+        self.rect_offset_x = 16
         self.rect.x += self.rect_offset_x
         self.health = 100
         self.is_alive = True
@@ -84,4 +92,4 @@ class Player(pygame.sprite.Sprite):
         self.velocity_y = 0
         self.on_ground = False
         self.facing_right = True
-        self.animator.set_state("idle")
+        self.set_player_state("idle")
