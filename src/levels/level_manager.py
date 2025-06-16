@@ -2,10 +2,12 @@ import pygame
 from settings import *
 import json
 from utils.sprite_loader import SpriteLoader
+from entities.enemy import Enemy
 
 class LevelConstruct:
     def __init__(self):
         self.platforms = []  
+        self.enemies = [] 
         self.door = None
         self.level_data = None
         self.x_coord = 0
@@ -40,6 +42,8 @@ class LevelConstruct:
         self.y_coord = 0
         self.platforms.clear()
         self.door = None
+        
+        self.enemies.clear()
 
         for row in self.level_data:
             for col in row:
@@ -58,6 +62,8 @@ class LevelConstruct:
                         print("Ошибка: дверь не загружена")
                 elif col == "p":
                     self.start_pos = (self.x_coord, self.y_coord)
+                elif col == "f":  # Новый символ для врага
+                    self.enemies.append(Enemy(self.x_coord, self.y_coord))
                 self.x_coord += PLATFORM_WIDTH
             self.y_coord += PLATFORM_HEIGHT
             self.x_coord = 0
@@ -88,6 +94,8 @@ class LevelConstruct:
                 screen.blit(self.door['surface'], adjusted_rect)
             else:
                 screen.blit(self.door['surface'], self.door['rect'])
+        for enemy in self.enemies:
+            enemy.draw(screen, camera)
 
     def get_level_size(self):
         return self.level_width, self.level_height
@@ -97,3 +105,5 @@ class LevelConstruct:
 
     def get_door(self):
         return self.door
+    def get_enemies(self):
+        return self.enemies

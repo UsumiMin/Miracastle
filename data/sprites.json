@@ -5,9 +5,20 @@
           "idle": {},
           "run": {},
           "jump": {},
-          "fall": {}
+          "fall": {},
+          "die": {}
         }
       },
+      "flower": {
+          "sprite_path": ["sprites", "characters", "flower"],
+          "states": {
+            "idle": {},
+            "attack": {},
+            "run": {},
+            "jump": {},
+            "fall": {}
+          }
+        },
       "menu": {
       "sprite_path": ["sprites", "UI", "menu"],
       "elements": {

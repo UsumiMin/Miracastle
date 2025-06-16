@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = PLAYER_SPEED
         self.jump_power = JUMP_FORCE
         self.on_ground = False
-        self.health = 100
+        self.health = 10
         self.is_alive = True
         self.near_door = False
 
@@ -62,6 +62,11 @@ class Player(pygame.sprite.Sprite):
 
 
     def update(self, platforms, camera, door_rect):
+        if not self.is_alive:
+            self.set_player_state("die")
+            self.image = self.animator.update()
+            return
+
         if not self.is_alive:
             return
 
@@ -116,4 +121,5 @@ class Player(pygame.sprite.Sprite):
         self.velocity_y = 0
         self.on_ground = False
         self.facing_right = True
+        self.death_animation_complete = False
         self.set_player_state("idle")

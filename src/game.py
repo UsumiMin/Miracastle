@@ -2,6 +2,7 @@ import pygame
 from settings import *
 from levels.level_manager import LevelConstruct as Level
 from entities.player import Player
+from entities.enemy import Enemy
 from UI.camera import Camera
 from UI.menu import Menu
 from utils.sprite_loader import SpriteLoader
@@ -22,6 +23,7 @@ class Game:
         self.state = None
         self.camera = None
         self.player = None
+        self.font = pygame.font.Font(ASSETS_PATH + "/RuneScape-ENA.ttf", 36)
 
     def _handle_menu_events(self, events):
         """Обрабатывает события в меню."""
@@ -44,7 +46,9 @@ class Game:
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.game_state = "paused"
                 self.menu.state = "paused"
-        door = self.state.get_door()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and not self.player.is_alive:
+                self.player.respawn(*self.state.get_start_pos())  # Перезапуск игрока
+                self.game_state = "playing"  # Возвращаем в игру
         action = self.player.handle_events(events)
         if action == "change_level":
             self._change_level()
@@ -84,7 +88,7 @@ class Game:
         """Меняет текущий уровень на следующий."""
         current_num = int(self.current_level)
         next_num = current_num + 1
-        max_level = 2  # Максимальный номер уровня
+        max_level = MAX_LEVEL
         self.current_level = str(next_num) if next_num <= max_level else "1"
         self.state.load(f"level_{self.current_level}")
         level_width, level_height = self.state.get_level_size()
@@ -107,26 +111,33 @@ class Game:
     def update(self):
         """Обновляет состояние игры"""
         if self.game_state == "playing":
-            if not self.player.is_alive:
-                self.player.respawn(*self.state.get_start_pos())  # Изменено на respawn
             self.camera.update(self.player)
             self.player.update(self.state.platforms, self.camera, self.state.get_door()['rect'] if self.state.get_door() else None)
+            for enemy in self.state.get_enemies():
+                enemy.update(self.player, self.state.platforms, self.camera)
 
     def draw(self):
         """Отрисовывает игру"""
         self.menu.draw()
         if self.game_state == "playing":
-            # Отрисовываем фон
             self.screen.blit(self.game_background, (0, 0))
             self.state.draw(self.screen, self.camera)
-            
-            if self.camera:
-                    adjusted_rect = self.camera.apply(self.state.get_door()['rect'])
-                    self.screen.blit(self.state.get_door()['surface'], adjusted_rect)
+            door = self.state.get_door()
+            if door and self.camera:
+                adjusted_rect = self.camera.apply(door['rect'])
+                self.screen.blit(door['surface'], adjusted_rect)
             self.player.draw(self.screen, self.camera)
+            for enemy in self.state.get_enemies():
+                enemy.draw(self.screen, self.camera)
             for platform in self.state.platforms:
                 pygame.draw.rect(self.screen, PLATFORM_COLOR2, self.camera.apply(platform['rect']), 2)
+            # Отображение текста при смерти
+            if not self.player.is_alive:
+                death_text = self.font.render("Вы погибли, нажмите R", True, YELLOW)
+                text_rect = death_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))
+                self.screen.blit(death_text, text_rect)
         pygame.display.update()
+
 
     def run(self):
         while self.running:
