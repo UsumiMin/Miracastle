@@ -1,8 +1,8 @@
 import pygame
+import json
 from settings import *
 from levels.level_manager import LevelConstruct as Level
 from entities.player import Player
-from entities.enemy import Enemy
 from UI.camera import Camera
 from UI.menu import Menu
 from utils.sprite_loader import SpriteLoader
@@ -24,11 +24,18 @@ class Game:
         self.camera = None
         self.player = None
         self.font = pygame.font.Font(ASSETS_PATH + "/RuneScape-ENA.ttf", 36)
+        self.death_count = 0
 
     def _handle_menu_events(self, events):
         """Обрабатывает события в меню."""
         result = self.menu.handle_events(events)
         if result == "new_game":
+            self.current_level = "1"
+            self.death_count = 0
+            self.game_state = "playing"
+            self._initialize_game()
+        elif result == "load_game":
+            self._load_game()
             self.game_state = "playing"
             self._initialize_game()
         elif result is False:
@@ -48,6 +55,7 @@ class Game:
                 self.menu.state = "paused"
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and not self.player.is_alive:
                 self.player.respawn(*self.state.get_start_pos())  # Перезапуск игрока
+                self.death_count += 1  # Увеличиваем счётчик смертей
                 self.game_state = "playing"  # Возвращаем в игру
         action = self.player.handle_events(events)
         if action == "change_level":
@@ -80,6 +88,7 @@ class Game:
         """Инициализирует игру с новым уровнем."""
         self.state = Level()
         self.state.load(f"level_{self.current_level}")
+        self._save_game()
         level_width, level_height = self.state.get_level_size()
         self.camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT, level_width, level_height)
         self.player = Player(*self.state.get_start_pos())
@@ -90,12 +99,35 @@ class Game:
         next_num = current_num + 1
         max_level = MAX_LEVEL
         self.current_level = str(next_num) if next_num <= max_level else "1"
+        self._save_game()
         self.state.load(f"level_{self.current_level}")
         level_width, level_height = self.state.get_level_size()
         self.camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT, level_width, level_height)
         start_pos = self.state.get_start_pos()
         self.player = Player(start_pos[0], start_pos[1])
 
+    def _load_game(self):
+        """Загружает сохранённый уровень из файла."""
+        save_path = os.path.join(DATA_PATH, "save.json")
+        try:
+            with open(save_path, 'r') as file:
+                save_data = json.load(file)
+                self.current_level = save_data.get("current_level", "1")
+                self.death_count = save_data.get("death_count", 0)
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.current_level = "1"
+            self.death_count = 0
+
+    def _save_game(self):
+        """Сохраняет текущий уровень в файл."""
+        save_data = {
+            "current_level": self.current_level,
+            "death_count": self.death_count
+        }
+        save_path = os.path.join(DATA_PATH, "save.json")
+        with open(save_path, 'w') as file:
+            json.dump(save_data, file)
+            
     def _cleanup_game_objects(self):
         """Очищает объекты игры при возврате в меню."""
         if hasattr(self, 'state'):
@@ -129,9 +161,6 @@ class Game:
             self.player.draw(self.screen, self.camera)
             for enemy in self.state.get_enemies():
                 enemy.draw(self.screen, self.camera)
-            for platform in self.state.platforms:
-                pygame.draw.rect(self.screen, PLATFORM_COLOR2, self.camera.apply(platform['rect']), 2)
-            # Отображение текста при смерти
             if not self.player.is_alive:
                 death_text = self.font.render("Вы погибли, нажмите R", True, YELLOW)
                 text_rect = death_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50))

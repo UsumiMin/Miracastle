@@ -43,7 +43,9 @@
       "sprite_path": ["sprites", "UI", "level"],
       "elements": {
         "door": {},
-        "life": {}
+        "life": {},
+        "block": {},
+        "deadly_block": {}
       }
     }
   

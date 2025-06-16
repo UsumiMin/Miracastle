@@ -36,7 +36,8 @@ class Menu:
                     self.active = False
                     return "new_game"
                 elif action == "load_game":
-                    print("Функция 'Прошлая игра' пока не реализована")
+                    self.active = False
+                    return "load_game"
                 elif action == "settings":
                     self.state = "settings"
                 elif action == "exit":

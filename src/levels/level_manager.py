@@ -27,13 +27,20 @@ class LevelConstruct:
 
     def _create_platform(self, x, y, is_deadly=False):
         """Создаёт платформу с заданными координатами и свойствами."""
+        if is_deadly:  # Спрайт для смертельных платформ
+            platform_img = self.level_elements["deadly_block"][0]
+            platform_surface = pygame.transform.scale(platform_img, (PLATFORM_WIDTH, PLATFORM_HEIGHT))
+        elif not is_deadly:  # Используем ассет только для обычных платформ
+            platform_img = self.level_elements["block"][0]
+            platform_surface = pygame.transform.scale(platform_img, (PLATFORM_WIDTH, PLATFORM_HEIGHT))
+        else:
+            platform_surface = pygame.Surface((PLATFORM_WIDTH, PLATFORM_HEIGHT))  # Пустая поверхность для смертельных платформ
+
         platform = {
-            'surface': pygame.Surface((PLATFORM_WIDTH, PLATFORM_HEIGHT)),
+            'surface': platform_surface,
             'rect': pygame.Rect(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT),
             'is_deadly': is_deadly
         }
-        if not is_deadly:
-            platform['surface'].fill(pygame.Color(PLATFORM_COLOR))
         return platform
     
     def _process_level_structure(self):
@@ -82,12 +89,11 @@ class LevelConstruct:
 
     def draw(self, screen, camera=None):
         for platform in self.platforms:
-            if not platform['is_deadly']:  # Отрисовываем только не смертельные платформы
-                if camera:
-                    adjusted_rect = camera.apply(platform['rect'])
-                    screen.blit(platform['surface'], adjusted_rect)
-                else:
-                    screen.blit(platform['surface'], platform['rect'])
+            if camera:
+                adjusted_rect = camera.apply(platform['rect'])
+                screen.blit(platform['surface'], adjusted_rect)
+            else:
+                screen.blit(platform['surface'], platform['rect'])
         if self.door:
             if camera:
                 adjusted_rect = camera.apply(self.door['rect'])
