@@ -24,15 +24,12 @@ class Player(pygame.sprite.Sprite):
         self.near_door = False
 
     def set_player_state(self, base_state):
-        state = base_state
-        if not self.facing_right:
-            state += "_flip"
+        state = base_state + "_flip" if not self.facing_right else base_state
         self.animator.set_state(state)
         return state
-        
 
-    def handle_events(self, events, door_rect):
-        keys = pygame.key.get_pressed()
+    def _handle_movement_keys(self, keys):
+        """Обработает движение игрока по клавишам."""
         self.velocity_x = 0
         if keys[pygame.K_LEFT]:
             self.velocity_x = -self.speed
@@ -40,30 +37,56 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_RIGHT]:
             self.velocity_x = self.speed
             self.facing_right = True
+
+    def _handle_jump_event(self, events):
+        """Обрабатывает событие прыжка."""
         for event in events:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.on_ground:
                 self.velocity_y = -self.jump_power
                 self.on_ground = False
+                return True
+        return False
+
+    def _handle_door_event(self, events):
+        """Обрабатывает взаимодействие с дверью."""
+        for event in events:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_e and self.near_door:
-                return "change_level"  # Сигнал для смены уровня
-        return None
+                return "change_level"
+        return None       
+
+    def handle_events(self, events):
+        keys = pygame.key.get_pressed()
+        self._handle_movement_keys(keys)
+        self._handle_jump_event(events)
+        return self._handle_door_event(events)
+
 
     def update(self, platforms, camera, door_rect):
         if not self.is_alive:
             return
-        self.image = self.animator.update()
-        old_x, old_y = self.rect.x, self.rect.y
+
+        # Обновление физики
         self.velocity_y += GRAVITY
         self.velocity_y = min(self.velocity_y, 15)
+        old_x, old_y = self.rect.x, self.rect.y
+
+        # Обработка столкновений
         safe_platforms = [p for p in platforms if not p.get('is_deadly', False)]
         self.rect.x, self.rect.y = handle_collisions(self, safe_platforms, camera, self.velocity_x, self.velocity_y, old_x, old_y)
+
+        # Проверка смертельных платформ
         for platform in platforms:
-            if 'is_deadly' in platform and platform['is_deadly'] and self.rect.colliderect(platform['rect']):
-                self.is_alive = False  # Устанавливаем флаг, чтобы Game обработал респавн
+            if platform.get('is_deadly', False) and self.rect.colliderect(platform['rect']):
+                self.is_alive = False
+                return
+
+        # Проверка двери
         if door_rect and self.rect.colliderect(door_rect):
             self.near_door = True
         else:
             self.near_door = False
+
+        # Установка состояния анимации
         if self.velocity_y < 0:
             self.set_player_state("jump")
         elif self.velocity_y > 0:
@@ -71,6 +94,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.set_player_state("idle" if self.velocity_x == 0 else "run")
 
+        self.image = self.animator.update()
 
     def draw(self, screen, camera=None):
         if not self.is_alive:
