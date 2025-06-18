@@ -4,7 +4,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 FPS = 60
 CHAR_HIT = 0.45
-MAX_LEVEL = 1
+MAX_LEVEL = 2
 
 # Получаем абсолютный путь к папке src/
 BASE_DIR = os.path.abspath(os.curdir)  # Путь к src/
@@ -18,7 +18,6 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (245,223,191)
-BACKGROUND_COLOR = (118,66,138)
 
 INIT_X = 100
 INIT_Y = 100
