@@ -1,5 +1,3 @@
-import pygame
-import os
 from utils.sprite_loader import SpriteLoader
 
 class AnimationManager:
@@ -7,10 +5,8 @@ class AnimationManager:
         self.current_state = "idle"
         self.current_frame = 0
         self.animation_speed = default_speed
-        data = SpriteLoader.load_character_data(character_name, scale)
-        self.sprites = data["sprites"]
-        self.elements = data["elements"] 
-
+        self.sprites = SpriteLoader.load_animated_sprites(character_name, scale)
+        
     def update(self):
         self.current_frame = (self.current_frame + self.animation_speed) % len(self.sprites[self.current_state])
         current_frame = int(self.current_frame)
