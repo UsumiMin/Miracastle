@@ -1,26 +1,50 @@
 { "sprites": {
       "player": {
         "sprite_path": ["sprites", "characters", "player"],
-        "elements": {
-          "idle": {"flip": true},
-          "run": {"flip": true},
-          "jump": {"flip": true},
-          "fall": {"flip": true}
+        "states": {
+          "idle": {},
+          "run": {},
+          "jump": {},
+          "fall": {}
         }
       },
+      "flower": {
+          "sprite_path": ["sprites", "characters", "flower"],
+          "states": {
+            "attack": {},
+            "run": {}
+          }
+        },
       "menu": {
       "sprite_path": ["sprites", "UI", "menu"],
       "elements": {
-        "background": {"static": true},
-        "new_game": {"static": true},
-        "load_game": {"static": true},
-        "settings": {"static": true},
-        "exit": {"static": true},
-        "toggle_sound": {"static": true},
-        "toggle_fullscreen": {"static": true},
-        "back": {"static": true},
-        "to_menu": {"static": true}
+        "background": {},
+        "new_game": {},
+        "load_game": {},
+        "settings": {},
+        "exit": {},
+        "toggle_sound": {},
+        "toggle_fullscreen": {},
+        "back": {},
+        "to_menu": {}
+      }
+    },
+    "backgrounds": {
+    "sprite_path": ["sprites", "backgrounds"],
+    "elements": {
+      "level_background": {}
+    }
+  },
+    "level": {
+      "sprite_path": ["sprites", "UI", "level"],
+      "elements": {
+        "door": {},
+        "life": {},
+        "block": {},
+        "deadly_block": {}
       }
     }
-  }
+  
 }
+}
+
