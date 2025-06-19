@@ -1,0 +1,60 @@
+import os
+
+# Основные настройки
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+FPS = 60
+MAX_LEVEL = 2
+FONT_SIZE = 36
+STRING_SPACE = 50
+
+# Пути к файлам
+BASE_DIR = os.path.abspath(os.curdir)
+ASSETS_PATH = os.path.join(BASE_DIR, "assets")
+DATA_PATH = os.path.join(BASE_DIR, "data")
+
+# Цвета в RGB
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (245,223,191)
+BACKGROUND_COLOR = (118,66,138)
+
+# Место для персонажа по умолчанию (Если забыть поставить его на уровне)
+INIT_X = 100
+INIT_Y = 100
+
+# Физика
+GRAVITY = 0.5
+JUMP_FORCE = 12
+PLAYER_SPEED = 5
+ENEMY_SPEED = 2
+
+# Настройки персонажей
+PLAYER_HIT = 0.45
+PLAYER_OFFSET = 16
+PLAYER_HEALTH = 1
+PLAYER_STEP_INTER = 300
+ENEMY_OFFSET_X = -70
+ENEMY_OFFSET_Y = -32
+ENEMY_WALK_RANGE = 3
+ENEMY_HEALTH = 1
+ENEMY_ATTACK_MAX = 1000
+ENEMY_ATTACK_HIT = 700
+ENEMY_ATTACK_RANGE = 1
+
+
+# Настройки платформ
+PLATFORM_WIDTH = 32
+PLATFORM_HEIGHT = 32
+PLATFORM_COLOR = "#531067"
+PLATFORM_COLOR2 = "#211441"
+
+# Настройки кнопок
+BUTTONS_X = 300
+BUTTONS_START = 200
+BUTTONS_STEP = 60
+BUTTONS_HEIGHT = 50
+BUTTONS_WIDTH = 200
