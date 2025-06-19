@@ -14,23 +14,41 @@ class AudioManager:
         self.step_sound = pygame.mixer.Sound(os.path.join(ASSETS_PATH, "sound", "player_step.mp3"))
     
     def play_background_music(self):
-        pygame.mixer.music.load(self.music_path)
-        pygame.mixer.music.play(-1)
+        """Загружает и запускает фоновую музыку на бесконечное воспроизведение."""
+        try:
+            pygame.mixer.music.load(self.music_path)
+            pygame.mixer.music.play(-1)  # -1 для бесконечного повтора
+        except Exception as e:
+            print(f"Ошибка загрузки музыки: {e}")
+
+    def stop_music(self):
+        """Останавливает воспроизведение музыки."""
+        pygame.mixer.music.stop()
+
+    def set_volume(self, volume):
+        """Устанавливает громкость музыки (0.0 - 1.0)."""
+        pygame.mixer.music.set_volume(volume)
 
     def play_button_click(self):
+        """Воспроизводит звук нажатия кнопки."""
         self.button_click_sound.play()
 
     def play_door_open(self):
+        """Воспроизводит звук открытия двери."""
         self.door_open_sound.play()
 
     def play_flower_attack(self):
+        """Воспроизводит звук атаки цветка."""
         self.flower_attack_sound.play()
     
     def play_death_sound(self):
+        """Воспроизводит звук смерти."""
         self.death_sound.play()
 
     def play_jump_sound(self):
+        """Воспроизводит звук прыжка."""
         self.jump_sound.play()
 
     def play_step_sound(self):
+        """Воспроизводит звук шагов."""
         self.step_sound.play()

@@ -26,7 +26,7 @@ def handle_y_collisions(entity, platforms, velocity_y, old_y):
                 entity.velocity_y = 0
     return entity_rect.y
 
-def handle_collisions(entity, platforms, velocity_x, velocity_y, old_y):
+def handle_collisions(entity, platforms, camera, velocity_x, velocity_y, old_x, old_y):
     entity_rect = entity.rect
     entity_rect.x = handle_x_collisions(entity, platforms, velocity_x)
     entity_rect.y = handle_y_collisions(entity, platforms, velocity_y, old_y)
